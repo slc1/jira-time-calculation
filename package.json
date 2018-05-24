@@ -1,0 +1,11 @@
+{
+  "name": "jira-time-calculation",
+  "version": "0.1.0",
+  "dependencies": {
+    "datatables": "^1.10.13",
+    "datatables.net": "^1.10.16",
+    "datatables.net-buttons": "^1.5.1",
+    "datatables.net-buttons-dt": "^1.5.1",
+    "datatables.net-dt": "^1.10.16"
+  }
+}
