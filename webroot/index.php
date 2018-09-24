@@ -72,6 +72,7 @@ if (!empty($_POST['isset_data'])) {
 <head>
     <meta charset="UTF-8">
     <title>Jira Worklogs</title>
+    <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="node_modules/datatables.net-dt/css/jquery.dataTables.css">
     <link rel="stylesheet" type="text/css" href="node_modules/datatables.net-buttons-dt/css/buttons.dataTables.css">
     <script type="text/javascript" charset="utf8" src="node_modules/jquery/dist/jquery.js"></script>
@@ -126,7 +127,7 @@ if (!empty($_POST['isset_data'])) {
     <?php } ?>
 </form>
 <br><br><br>
-<?php if ($_POST['isset_data']) { ?>
+<?php if (!empty($_POST['isset_data'])) { ?>
 
     <table id="jiraDataTable" cellpadding="1" cellspacing="0" border="1">
         <thead>
