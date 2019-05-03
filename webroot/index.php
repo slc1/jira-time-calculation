@@ -37,7 +37,6 @@ if ($currentProject !== null) {
 }
 
 
-
 $defaultStartDate = (new \DateTime('- 1 month'))->format('Y-m-d');
 $defaultEndDate = (new \DateTime())->format('Y-m-d');
 
@@ -80,32 +79,36 @@ if (!empty($_POST['isset_data'])) {
     <link rel="stylesheet" type="text/css" href="node_modules/select2/dist/css/select2.css">
     <link rel="stylesheet" type="text/css" href="node_modules/select2-bootstrap-theme/dist/select2-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css">
-    <link rel="stylesheet" type="text/css" href="node_modules/datatables.net-responsive-bs4/css/responsive.bootstrap4.css">
+    <link rel="stylesheet" type="text/css"
+          href="node_modules/datatables.net-responsive-bs4/css/responsive.bootstrap4.css">
 
 
     <script type="text/javascript" charset="utf8" src="node_modules/jquery/dist/jquery.js"></script>
     <script type="text/javascript" charset="utf8" src="node_modules/datatables.net/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" charset="utf8" src="node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
 
-    <script type="text/javascript" charset="utf8" src="node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
     <script type="text/javascript" charset="utf8" src="node_modules/select2/dist/js/select2.js"></script>
 
     <script type="text/javascript" charset="utf8" src="node_modules/jszip/dist/jszip.js"></script>
     <script type="text/javascript" charset="utf8" src="node_modules/pdfmake/build/pdfmake.js"></script>
     <script type="text/javascript" charset="utf8" src="node_modules/pdfmake/build/vfs_fonts.js"></script>
-    <script type="text/javascript" charset="utf8" src="node_modules/datatables.net-buttons/js/dataTables.buttons.js"></script>
-<!--    <script type="text/javascript" charset="utf8"-->
-<!--            src="node_modules/datatables.net-buttons/js/buttons.colVis.js"></script>-->
-<!--    <script type="text/javascript" charset="utf8"-->
-<!--            src="node_modules/datatables.net-buttons/js/buttons.flash.js"></script>-->
-    <script type="text/javascript" charset="utf8" src="node_modules/datatables.net-buttons-bs4/js/buttons.bootstrap4.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="node_modules/datatables.net-buttons/js/dataTables.buttons.js"></script>
+
+    <script type="text/javascript" charset="utf8"
+            src="node_modules/datatables.net-buttons-bs4/js/buttons.bootstrap4.js"></script>
     <script type="text/javascript" charset="utf8"
             src="node_modules/datatables.net-buttons/js/buttons.print.js"></script>
     <script type="text/javascript" charset="utf8"
             src="node_modules/datatables.net-buttons/js/buttons.html5.js"></script>
 
-    <script type="text/javascript" charset="utf8" src="node_modules/datatables.net-responsive/js/dataTables.responsive.js"></script>
-    <script type="text/javascript" charset="utf8" src="node_modules/datatables.net-responsive-bs4/js/responsive.bootstrap4.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="node_modules/datatables.net-responsive/js/dataTables.responsive.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="node_modules/datatables.net-responsive-bs4/js/responsive.bootstrap4.js"></script>
 </head>
 <body>
 <div class="container">
@@ -140,28 +143,32 @@ if (!empty($_POST['isset_data'])) {
                                 from
                             </div>
                             <div class="col-md-4">
-                                <input type="text" name="startDate" class="form-control datepicker datepicker-inline" value="<?php echo $startDate ?>">
+                                <input type="text" name="startDate" class="form-control datepicker datepicker-inline"
+                                       value="<?php echo $startDate ?>">
                             </div>
                             <div class="col-md-2">
                                 to
                             </div>
                             <div class="col-md-4">
-                                <input type="text" name="endDate" class="form-control datepicker datepicker-inline" value="<?php echo $endDate ?>">
+                                <input type="text" name="endDate" class="form-control datepicker datepicker-inline"
+                                       value="<?php echo $endDate ?>">
                             </div>
                         </div>
                     </div>
-                <div class="form-group">
-                    <input type="hidden" name="isset_data" value="1">
-                    <button type="submit" class="btn btn-primary">Calculate</button>
-                </div>
+                    <div class="form-group">
+                        <input type="hidden" name="isset_data" value="1">
+                        <button type="submit" class="btn btn-primary">Calculate</button>
+                    </div>
                 <?php } else { ?>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-success">Set Project</button>
-                </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Set Project</button>
+                    </div>
                 <?php } ?>
             </form>
-            <br><br><br>
+
             <?php if (!empty($_POST['isset_data'])) { ?>
+                <h2>Common time: <strong class="common-time"></strong> hours</h2>
+                <br>
                 <table id="jiraDataTable" class="table dataTables_wrapper dt-bootstrap4">
                     <thead>
                     <tr>
@@ -183,7 +190,12 @@ if (!empty($_POST['isset_data'])) {
                         foreach ($issue->fields->worklog->worklogs as $worklog) {
                             $workLogDate = (new \DateTime($worklog->started))->format('Y-m-d');
 
-                            if ($workLogDate >= $startDate && $workLogDate <= $endDate && (empty($userKey) || $userKey == $worklog->author->key || $userKey == $worklog->author->name)) {
+                            if ($workLogDate >= $startDate && $workLogDate <= $endDate &&
+                                (
+                                    empty($userKey) ||
+                                    (!empty($worklog->author->key) && $userKey == $worklog->author->key) ||
+                                    (!empty($worklog->author->name) && $userKey == $worklog->author->name)
+                                )) {
                                 $commonTime += $worklog->timeSpentSeconds;
                                 echo '<tr>';
                                 //echo '<td><a href="' . $issue->self . '">' . $issue->key . '</a></td>';
@@ -206,7 +218,11 @@ if (!empty($_POST['isset_data'])) {
                 </table>
 
                 <h2>Common time: <?php echo round($commonTime / 3600, 2); ?></h2>
-
+                <script type="text/javascript">
+                  $(document).ready(function () {
+                    $('.common-time').html('<?php echo round($commonTime / 3600, 2); ?>');
+                  });
+                </script>
             <?php } ?>
         </div>
     </div>
@@ -214,6 +230,7 @@ if (!empty($_POST['isset_data'])) {
 
 <script type="text/javascript">
   $(document).ready(function () {
+
     $('#jiraDataTable').DataTable({
       dom: 'Bfrtip',
       buttons: [
@@ -229,6 +246,7 @@ if (!empty($_POST['isset_data'])) {
     $('.select2').select2({
       theme: "bootstrap"
     });
+
   });
 </script>
 </body>
