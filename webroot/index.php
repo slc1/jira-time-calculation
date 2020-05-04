@@ -54,7 +54,7 @@ if (!empty($_POST['isset_data'])) {
     $resultIssues = [];
     do {
         try {
-            $issues = $issueService->search('project = ' . $currentProject . '   and timespent > 0 and updated > ' . $startDate . ' ', $startAt, $step, $fields);
+            $issues = $issueService->search('project = ' . $currentProject . '   AND timespent > 0 AND updated >= ' . $startDate . ' ', $startAt, $step, $fields);
         } catch (JiraException $e) {
             return \Response::json(['meta' => ['message' => $e->getMessage()]], 500);
         }
@@ -63,7 +63,11 @@ if (!empty($_POST['isset_data'])) {
 
     } while (count($issues->issues) == $step);
 }
-
+//foreach ($resultIssues as $resultIssue) {
+//    if ($resultIssue->key === 'WP-386') {
+//        echo '<pre>' . print_r($resultIssue, 1) . '</pre>';
+//    }
+//}
 
 ?>
 <!DOCTYPE html>
@@ -187,26 +191,39 @@ if (!empty($_POST['isset_data'])) {
 //                echo '<tr><td colspan="4">';
 //                echo $issue->key;
 //                echo '</td></tr>';
-                        foreach ($issue->fields->worklog->worklogs as $worklog) {
-                            $workLogDate = (new \DateTime($worklog->started))->format('Y-m-d');
-
+                        if ($issue->fields->worklog->total > $issue->fields->worklog->maxResults) {
+                            $workLogs = $issueService->getWorklog($issue->key)->worklogs;
+                            //echo '<tr><td colspan="6">' .  '<pre>' . print_r($workLogs, 1) . '</pre>' .'</td></tr>'. PHP_EOL;
+                        } else {
+                            $workLogs = $issue->fields->worklog->worklogs;
+                        }
+                        foreach ($workLogs as $workLog) {
+                            $workLog->author = (object) $workLog->author;
+                            $workLogDate = (new \DateTime($workLog->started))->format('Y-m-d');
+//                            if ($workLog->id == 69410) {
+//                                echo '<tr><td colspan="6">';
+//                                echo $workLogDate . '<br>';
+//                                echo $userKey  . '<br>';
+//                                echo '<pre>' . print_r($workLog->author, 1) . '</pre>';
+//                                echo '</td></tr>'. PHP_EOL;
+//                            }
                             if ($workLogDate >= $startDate && $workLogDate <= $endDate &&
                                 (
                                     empty($userKey) ||
-                                    (!empty($worklog->author->key) && $userKey == $worklog->author->key) ||
-                                    (!empty($worklog->author->name) && $userKey == $worklog->author->name)
+                                    (!empty($workLog->author->key) && $userKey == $workLog->author->key) ||
+                                    (!empty($workLog->author->name) && $userKey == $workLog->author->name)
                                 )) {
-                                $commonTime += $worklog->timeSpentSeconds;
+                                $commonTime += $workLog->timeSpentSeconds;
                                 echo '<tr>';
                                 //echo '<td><a href="' . $issue->self . '">' . $issue->key . '</a></td>';
                                 echo '<td>' . $issue->key . '</td>';
                                 //echo '<td><a href="' . $worklog->author->self . '">' . $worklog->author->displayName . '</a></td>';
-                                echo '<td>' . $worklog->author->displayName . '</td>';
+                                echo '<td>' . $workLog->author->displayName . '</td>';
                                 //echo '<td><a href="' . $worklog->self . '">' . $worklog->comment . '</a></td>';
-                                echo '<td>' . $worklog->comment . '</td>';
-                                echo '<td>' . (new \DateTime($worklog->started))->format('Y-m-d') . '</td>';
-                                echo '<td>' . $worklog->timeSpent . '</td>';
-                                echo '<td>' . $worklog->timeSpentSeconds . '</td>';
+                                echo '<td>' . $workLog->comment . '</td>';
+                                echo '<td>' . (new \DateTime($workLog->started))->format('Y-m-d') . '</td>';
+                                echo '<td>' . $workLog->timeSpent . '</td>';
+                                echo '<td>' . $workLog->timeSpentSeconds . '</td>';
                                 echo '</tr>';
                             }
 
